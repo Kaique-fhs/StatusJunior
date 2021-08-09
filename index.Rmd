@@ -1,0 +1,596 @@
+---
+title: "Tutorial de Dashboard"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: TRUE
+---
+
+
+```{r, echo=FALSE,message=FALSE}
+# Bibliotecas utilizadas
+
+library(dplyr)
+library(tidyr)
+```
+
+<html>
+<body>
+<style>
+
+h1.title {
+  display: none;
+}
+
+div.a {
+	text-align: center;
+}
+
+</style>
+
+<div class="a">
+
+<font color="white"><p> . </p></font>
+
+# Manipulação e Visualização de dados no R
+##### Minucurso 2 - Engope
+#### Status Júnir
+##### 09 e 10 de Agosto de 2021
+
+<font color="white"><p> . </p></font>
+
+</div>
+
+# Minicurso 2 - Engope
+<hr/>
+
+<center><img src="https://uploaddeimagens.com.br/images/003/372/168/full/Representantes.png?1628477589" width="670px"></center>
+
+<br>
+
+*Título:* Manipulação e Visualização de dados no R
+
+*Resumo:* Uma das etapas mais importantes na análise de dados é organizar e traduzir informações para auxiliar na tomada de decisões. Portanto, habilidades de manipulação e visualização de dados permitem que o analista transforme dados brutos em produtos interpretáveis. Neste minicurso trabalharemos fundamentos da manipulação e visualização de dados usando o software R, mais especificamente com os pacotes do tidyverse.
+
+*Pré-requisito:* Conhecimentos básicos de Estatística e Linguagem R
+
+
+# Parte 1 - Manipulação de dados
+<hr/>
+
+## Introdução
+<hr/>
+
+### Bibliotecas
+<hr/>
+
+Nesse minicurso usaremos as seguintes bibliotecas
+```{r, message=FALSE}
+#install.packages("dplyr")
+library(dplyr)
+#install.packages("tidyr")
+library(tidyr)
+```
+
+### Dados
+<hr/>
+
+```{r}
+iris = as_tibble(iris)
+iris
+```
+
+
+### `Pipe %>%`
+<hr/>
+
+<center><img src="https://uploaddeimagens.com.br/images/003/372/176/full/pipe.png?1628478410" width="200px"></center>
+
+<br>
+
+O pipe avalia o código do lado esquerdo e passa o resultado como o primeiro argumento do código do lado direito
+
+- Podemos inserir com o atalho: Control + Shift + M
+
+Veja um script sem pipe
+
+```{r}
+set.seed(1)
+round(sqrt(mean(runif(100))),2)
+```
+
+Temos o mesmo script usando pipe
+
+```{r}
+set.seed(1)
+100 %>% 
+  runif() %>% 
+  mean()  %>% 
+  sqrt()  %>% 
+  round(2)
+```
+
+## Dplyr
+<hr/>
+
+Observem as imagens com um resumo sobre as funções do dplyr
+
+<center><img src="https://i.ibb.co/wyCxfBR/dplyr1.png" width="700px"></center>
+
+<br>
+
+<center><img src="https://i.ibb.co/4pv9NqC/dplyr2.png" width="700px"></center>
+
+<br>
+
+Hoje daremos foco as seguintes funções do pacote Dplyr
+
+- select(): Seleciona colunas
+- relocate(): 
+
+
+### Testes lógicos
+<hr/>
+
+Esses são alguns testes lógicos que usamos muito com as funções do pacote dplyr
+
+- **<**  menor que
+- **>** maior que
+- **<=**  menor igual a
+- **>** maior igual a
+- **==** igual a
+- **%in%** faz parte de um grupo
+- **is.na()** é NA
+- **&** e
+- **|** ou
+- **!** diferente de
+
+Exemplo de teste logico
+```{r}
+c(-1, 0, 1) > 0
+```
+
+Exemplo com texto
+```{r}
+c("a", "A", "b", "c") %in% c("a", "c")
+```
+
+### `select()`
+<hr/>
+
+Com essa função podemos selecionar colunas da base de dados pelo nome
+
+```{r}
+iris %>% select(Sepal.Length, Sepal.Width)
+```
+
+Pela posição das colunas
+
+```{r}
+iris %>% select(1, 2)
+```
+
+Até mesmo retirar colocando um "-" antes do nome da coluna
+
+```{r}
+iris %>% select(-Species)
+```
+
+
+### `relocate()`
+<hr/>
+
+Podemos mudar as posições das colunas com os argumentos .before ou .after
+
+- Obs: Se nenhum dos argumentos for fornecido, as colunas especificadas serão colocadas no começo da base
+
+```{r}
+iris %>% relocate(Species, .before = Petal.Length)
+```
+
+Ou colocar uma coluna depois de outra qualquer
+```{r}
+iris %>% relocate(Species, .after = Petal.Length)
+```
+
+
+### `arrange()`
+<hr/>
+
+Podemos ordernar as linhas do banco de dados, e para cada tipe acontecera o seguinte:
+- Se a variável for categórica ordena por ordem alfabética
+- Se a variável for numérica ordena do menor para o maior
+- Se a varíavel for um fator, ordena pelos níveis do fator
+
+Podemos ordenar as linhas de uma coluna
+
+```{r}
+iris %>% arrange(Sepal.Length)
+```
+
+Podemos ordenar as linhas de forma decrescente usando a função desc()
+```{r}
+iris %>% arrange(desc(Sepal.Length))
+```
+
+É também possível ordenar mais de uma coluna de uma vez
+```{r}
+iris %>% arrange(Species, desc(Sepal.Length))
+```
+
+
+### `filter()`
+<hr/>
+
+Com essa função podemos filtrar as linhas das colunas
+
+- Obs: Qualquer tipo de operação pode ser feita dentro do filter, contanto que esta operação retorne TRUE/FALSE
+
+
+Filtrando uma coluna por vez
+
+```{r}
+iris %>% filter(Petal.Length <= 2)
+```
+
+Filtrar mais de uma coluna
+```{r}
+iris %>% filter(Species == "setosa", Sepal.Length <= 5)
+```
+
+Até mesmo mais de uma condição na mesma coluna
+```{r}
+iris %>% filter(Species %in% c("setosa", "versicolor"))
+```
+
+
+### `slice()`
+<hr/>
+
+Com o slice() podemos ver linhas especificas da base de dados
+
+```{r}
+iris %>%  slice(2:5)
+```
+
+### `sample_n()`
+<hr/>
+
+Podemos sortear _n_ linhas da base de dados 
+```{r}
+iris %>% sample_n(size = 3) 
+```
+
+Ou até mesmo uma fração do banco de dados
+```{r}
+iris %>% sample_frac(size = 0.1)
+```
+
+
+### `mutate()`
+<hr/>
+
+Modifica e cria colunas no banco de dados
+
+Para modificar basta usar o mesmo nome de uma coluna existente
+```{r}
+iris %>%
+  mutate(
+    Sepal.Length = Sepal.Length*1000,
+    Sepal.Width = Sepal.Width/1000
+  )
+```
+
+
+Para criar precisa dar um nome diferente para a coluna
+```{r}
+iris %>%
+  mutate(  Texto = paste(Species, Sepal.Width, sep = " - ")  ) %>%
+  relocate(Texto)
+```
+
+
+Podemos fazer qualquer operação contanto que o seu resultado retorne um vetor o mesmo comprimento das linhas da base ou de comprimento 1 
+
+```{r}
+iris %>% 
+  mutate(Status_Junior = "Status Júnior") %>% 
+  relocate(Status_Junior)
+```
+
+#### Funções do dplyr úteis:
+<hr/>
+
+```{r}
+df <- tibble::tibble(
+  var = c(-5:5)
+)
+```
+
+if_else: retorna valor dependendo de um teste lógico
+```{r}
+df %>% 
+  mutate(
+    var2 = if_else(var >= 0, "TRUE", "FALSO")
+  )
+```
+
+case_when: generalização do `if_else()`
+```{r}
+df %>% 
+  mutate(
+    var2 = case_when(
+      var < 0 ~ "Caso 1",
+      var < 3 ~ "Caso 2",
+      TRUE ~ "Restante"
+    )
+  )
+```
+
+
+- **Obs1:** A ordem das condições é importante (a segunda condição verifica se `0 <= var < 4`)
+
+- **Obs2:** O `TRUE` significa que caso as observações não entrem nas condições anteriores a função retorna o valor do lado direito
+
+
+lag: devolve valor defasado
+lead: devolve o valor futuro
+
+```{r}
+df %>% 
+  mutate(
+    var  = runif(11, min = 2, max = 99),
+    var  = round(var,0),
+    var2 = lag(var),
+    var3 = lead(var)
+  )
+```
+
+- n: retorna o tamanho do grupo
+- n_distinct: retorna o número de valores distintos
+
+```{r}
+df %>% 
+  mutate(
+    var2 = n(),
+    var3 = n_distinct(var)
+  )
+```
+
+
+### `transmute()`
+<hr/>
+
+Podemos entender a função transmute como uma união do mutate e do select, observe que os códigos abaixo são equivalentes
+
+```{r eval=FALSE}
+iris %>%
+  mutate(
+    Sepal.Length_mm = Sepal.Length*10,
+    Sepal.Width_mm = Sepal.Width*10,) %>% 
+  
+  select(
+    Sepal.Length_mm,
+    Sepal.Width_mm)
+```
+
+Agora usando transmute
+```{r}
+iris %>%
+  transmute(
+    Sepal.Length_mm = Sepal.Length*10,
+    Sepal.Width_mm = Sepal.Width*10 )
+```
+
+
+### `summarise()`
+<hr/>
+
+Podemos calcular medidas de resumo no banco de dados:
+
+- médias
+- soma
+- desvios padrões
+- frequências absolutas
+- ...
+
+Observe que ficamos apenas com as colunas modificadas
+ 
+```{r}
+iris %>% 
+  summarise(
+    media_sepal_lenght = mean(Sepal.Length),
+    sd_sepal_lenght    = sd(Sepal.Length),
+    media_sepal_width  = mean(Sepal.Width),
+    sd_sepal_width     = sd(Sepal.Width),
+    n                  = n()
+  )
+```
+
+
+### `group_by()`
+<hr/>
+
+O `group_by()` em si não faz nenhuma alteração notável na base
+
+```{r}
+iris %>% group_by(Species)
+```
+
+
+Junto com outras funções como `summarise()`, o `group_by()` muda o escopo da função
+- Criamos grupos como se fossem novas bases distintas
+- Executa o código separadamente para cada grupo
+- Depois de usar o `group_by()` não podemos deixar de usar o `ungroup()` para desagrupar os dados se quisermos continuar fazendo mudanças na base
+
+
+### `group_by() + sumarise()`
+<hr/>
+
+- Calcula medidas resumo agrupadas pelas categorias de uma outra coluna
+- As medidas resumo serão aplicadas por grupo
+
+```{r}
+iris %>% 
+  group_by(Species) %>% 
+  summarise(
+    media_sepal_lenght = mean(Sepal.Length),
+    sd_sepal_lenght = sd(Sepal.Length),
+    n = n()
+  ) %>% 
+  ungroup()
+```
+
+
+### `across()`
+
+Com o across temos mais facilidade em fazer operações em várias colunas
+
+- `across(colunas, função, argumentos_adicionais, nomes_das_colunas)`
+
+```{r}
+iris %>% 
+  summarise(
+    across(
+      .cols = c(Sepal.Width, Sepal.Length),
+      .fns = sum,
+      na.rm = TRUE,
+      .names = "soma_{.col}"
+    )
+  )
+```
+
+- **Obs:** O `across()` pode ser utilizado em todos os verbos do `dplyr` menos `select()` e `rename()`
+
+
+
+- Se o argumento `.cols`não for fornecido, todas as colunas serão selecionadas
+```{r}
+iris %>% summarise(
+  across(.fns = n_distinct)
+)
+```
+
+
+Podemos colocar mais de uma função para ser aplicada nas colunas 
+```{r eval = FALSE}
+iris %>% 
+  summarise(
+    media_sepal_lenght = mean(Sepal.Length),
+    sd_sepal_lenght = sd(Sepal.Length),
+    media_sepal_width = mean(Sepal.Width),
+    sd_sepal_width = sd(Sepal.Width)
+  )
+```
+
+Veja com o `across()`
+```{r}
+iris %>% 
+  summarise(
+    across(
+      .cols = starts_with("Sepal"),
+      .fns = list(Media = mean, SD = sd)
+    )
+  )
+```
+
+
+Também é possível selecionar colunas a partir de testes lógico. Para isso usamos a 
+função `where()`
+
+```{r}
+iris %>% 
+  mutate(
+    across(where(is.numeric) & starts_with("Sepal"), as.character)
+  )
+```
+
+
+### `bind_rows()`
+<hr/>
+
+A função `bind_rows()` junta as linhas de duas ou mais bases
+
+- A ordem das colunas das bases não precisam ser iguais
+- Tem que ter a mesma quantidade de colunas
+
+```{r}
+nova_df <- tibble::tibble( Sepal.Width = c(3.5, 3, 99),
+                           Sepal.Length = c(5, 4.3, 99),
+                           Petal.Length = c(1.2, 1.4, 99),
+                           Petal.Width = c(0.3, 0.2, 99),
+                           Species = c("setosa", "versicolor", "virginica"))
+
+iris %>% bind_rows(nova_df)
+```
+
+
+### `bind_cols()`
+<hr/>
+
+```{r include=FALSE}
+load("dados/dados_pais.rda")
+```
+
+A função `bind_cols()` junta as colunas de duas ou mais bases
+
+- Tem que ter a mesma quantidade de linhas
+```{r}
+dados_pais
+```
+ Unindo as duas bases de dados
+
+```{r}
+iris %>% 
+  bind_cols(dados_pais) %>%
+  relocate(pais)
+```
+
+### Joins
+<hr/>
+
+Dicas para fazer joins e mudanças na estrutura da base de [dados](https://www.garrickadenbuie.com/project/tidyexplain/#spread-and-gather)
+
+
+## tidyr
+<hr/>
+
+Os pacotes do tidyverse foram criados para usar e retornar dados arrumados (*tidy*) sempre que apropriado.
+
+- O pacote `tidyr`possui funções para deixar os dados no formato *tidy*
+
+
+Dados *tidy* estão organizados de forma que:
+
+- cada coluna é uma variável;
+- cada linha é uma observação;
+- cada célula representa um único valor.
+
+
+
+<center><img src="https://d33wubrfki0l68.cloudfront.net/476fa4025501dcec05be08248b32d390dd2337d5/574c6/css/images/hex/tidyr.png" width="200px"></center>
+
+<br>
+
+
+[Curso R](https://livro.curso-r.com/7-3-tidyr.html)
+
+
+# Parte 2 - Visualização de dados
+<hr/>
+
+# Referências
+<hr/>
+
+- [Livro da Curso-R](https://livro.curso-r.com/7-manipulacao.html)
+
+- [A tidyverse Cookbook](https://rstudio-education.github.io/tidyverse-cookbook/how-to-use-this-book.html#tidy-data)
+
+- [R for data science](https://r4ds.had.co.nz/tibbles.html)
+
+- [Join com dplyr](https://rpubs.com/CristianaFreitas/311735)
+
+- [Slides do Prof. Walmes Marques Zeviani - UFPR](http://leg.ufpr.br/~walmes/cursoR/data-vis/slides/05-dplyr.pdf)
+
+- [ Slides muito bons](https://github.com/rstudio/webinars/blob/master/05-Data-Wrangling-with-R-and-RStudio/wrangling-webinar.pdf)
